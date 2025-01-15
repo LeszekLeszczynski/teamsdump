@@ -2,6 +2,7 @@ from flask import Flask, redirect, url_for, session, request
 from msal import ConfidentialClientApplication
 import requests
 import json
+import os
 
 app = Flask(__name__)
 app.secret_key = "your_secret_key"  # Replace with your own secret key
@@ -140,10 +141,11 @@ def get_messages(token, chat):
         else:
             return f"Error: {response.status_code}, {response.text}"
 
-    with open(f"{chat['chat_id']}.json", "w") as f:
+    with open(f"dump/{chat['chat_id']}.json", "w") as f:
         f.write(json.dumps(messages))
 
     return len(messages)
+
 
 def parse_messages(data):
     messages = data.get("value", [])
@@ -164,4 +166,9 @@ def parse_messages(data):
 
 
 if __name__ == "__main__":
+    try:
+        os.mkdir('dump')
+    except FileExistsError:
+        pass
+
     app.run(debug=True)
